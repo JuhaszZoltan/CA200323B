@@ -12,15 +12,67 @@ namespace CA200323B
     {
         static List<Ar> arak;
         static int minDif;
+        const float euroArfolyam = 307.7F;
+        static int bekert;
         static void Main()
         {
             Beolvas();
+
             F03();
             F04();
             F05();
             F06();
+            F07();
+            F08();
+            F10();
 
             Console.ReadKey();
+        }
+
+
+        static int EltelNapokSzama(Ar a1, Ar a2)
+        {
+            if (Math.Abs(arak.IndexOf(a1) - arak.IndexOf(a2)) != 1)
+                throw new Exception("nem egymást követő dátumokat adáté meg!");
+
+            return (int)Math.Abs((a1.Valtozas - a2.Valtozas).TotalDays);
+        }
+
+        private static void F10()
+        {
+            var adaottEvArai = arak.Where(a => a.Valtozas.Year == bekert)
+                .ToList();
+
+            int max = 0;
+            for (int i = 1; i < adaottEvArai.Count; i++)
+            {
+                if (max < EltelNapokSzama(adaottEvArai[i - 1], adaottEvArai[i]))
+                    max = EltelNapokSzama(adaottEvArai[i - 1], adaottEvArai[i]);
+            }
+
+            Console.WriteLine(max);
+        }
+
+        private static void F08()
+        {
+            do
+            {
+                Console.Write("in: ");
+                bekert = int.Parse(Console.ReadLine());
+            } while (bekert > 2016 || bekert < 2011);
+        }
+
+        private static void F07()
+        {
+            var sw = new StreamWriter("euro.txt");
+
+            arak.ForEach(a => sw.WriteLine(
+                "{0};{1:0.00};{2:0.00}",
+                a.Valtozas.ToString("yyyy.MM.dd"),
+                a.Benzin / euroArfolyam,
+                a.Gazolaj / euroArfolyam));
+
+            sw.Close();
         }
 
         private static void F06()
